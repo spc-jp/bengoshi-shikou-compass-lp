@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弁護士 思考コンパス | Pro</title>
+    <!-- Google Fonts: 信頼感のあるNoto Sans JPと、数字用のRoboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Icons (Phosphor Icons via CDN for lightweight, modern look) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* ------------------------------------------------------------------
+           Base Variables & Reset (Theme System)
+        ------------------------------------------------------------------ */
+        :root {
+            /* Color Palette - Premium & Trustworthy */
+            --primary-h: 215;
+            --primary-s: 40%; /* 少し彩度を上げてリッチに */
+            --primary-l: 20%; /* Deep Navy */
+            
+            --primary-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+            --primary-light: hsl(var(--primary-h), var(--primary-s), 90%);
+            
+            /* Premium Accents */
+            --premium-gold: #c5a059; /* Champagne Gold for Pro features */
+            --premium-gold-light: #f0e6d2;
+            
+            --accent-color: #c0392b; /* Alert/Deadline Red */
+            --success-color: #27ae60;
+            
+            /* Light Mode Defaults */
+            --bg-body: #f8f9fa;
+            --bg-surface: #ffffff;
+            --bg-surface-alt: #f4f6f8; /* Slightly cool gray */
+            --text-main: #2c3e50;
+            --text-muted: #636e72;
+            --border-color: #dfe6e9;
+            --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.08); /* Softer, larger shadow */
+            --shadow-float: 0 20px 40px -4px rgba(0, 0, 0, 0.12);
+
+            /* LP Specific Gradients: Deep Navy with a hint of light */
+            --hero-bg: radial-gradient(circle at 80% 20%, #2c3e50 0%, #1a2a3a 50%, #0f172a 100%);
+            --hero-text: #ffffff;
+        }
+
+        /* Dark Mode Override */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #0f1115; /* Rich black/gray */
+                --bg-surface: #1a1d21;
+                --bg-surface-alt: #23272e;
+                --text-main: #ecf0f1;
+                --text-muted: #94a3b8;
+                --border-color: #334155;
+                --primary-color: #60a5fa; /* Brighter blue for dark mode readability */
+                --hero-bg: radial-gradient(circle at 80% 20%, #1e293b 0%, #0f172a 100%);
+                --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7; /* 少し行間を広げて優雅に */
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: 0.02em; /* 文字間をわずかに広げて高級感 */
+        }
+
+        a { text-decoration: none; color: inherit; transition: opacity 0.2s; }
+        ul { list-style: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+        /* ------------------------------------------------------------------
+           Animations (Scroll Reveal)
+        ------------------------------------------------------------------ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); /* Elegant easing */
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ------------------------------------------------------------------
+           Layout Utilities
+        ------------------------------------------------------------------ */
+        .container {
+            max-width: 1140px; /* 少し幅を絞って引き締める */
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .section-py { padding: 100px 0; } /* 余白を増やして高級感 */
+        .section-py-sm { padding: 60px 0; }
+
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; }
+
+        @media (max-width: 850px) {
+            .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
+            .section-py { padding: 60px 0; }
+        }
+
+        /* ------------------------------------------------------------------
+           Navigation (Sticky + Glass)
+        ------------------------------------------------------------------ */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 72px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px); /* Stronger blur */
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: background 0.3s;
+        }
+        @media (prefers-color-scheme: dark) {
+            .navbar { background: rgba(15, 17, 21, 0.85); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        }
+
+        .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+
+        .brand-logo {
+            font-weight: 700; font-size: 1.15rem; color: var(--text-main);
+            display: flex; align-items: center; gap: 10px;
+            letter-spacing: 0.05em;
+        }
+        .brand-logo i { color: var(--premium-gold); font-size: 1.3rem; } /* Logo Icon Gold */
+
+        .nav-links { display: flex; gap: 32px; font-size: 0.9rem; font-weight: 500; align-items: center;}
+        
+        .nav-cta {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 4px; /* Slightly sharper corners for professional look */
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+
+        @media (max-width: 768px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+        /* ------------------------------------------------------------------
+           LP Section Components
+        ------------------------------------------------------------------ */
+        /* LP Typography */
+        .lp-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+        .lp-subtitle {
+            font-size: 1.15rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            font-weight: 300; /* Lighter weight for elegance */
+        }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.02em; }
+        .section-desc { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+        /* LP-1 Hero - Enhanced Gradient & Depth */
+        .hero-section {
+            padding-top: 160px;
+            padding-bottom: 100px;
+            background: var(--hero-bg);
+            color: var(--hero-text);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content { position: relative; z-index: 2; max-width: 580px; }
+
+        .hero-cta-group { display: flex; gap: 16px; margin-bottom: 2rem; }
+
+        .btn-main {
+            background-color: var(--premium-gold); /* Gold CTA */
+            color: #ffffff;
+            padding: 14px 36px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3); /* Gold glow */
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4); background-color: #d4af37; }
+        
+        .btn-outline {
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 14px 36px;
+            border-radius: 4px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+
+        .hero-safe-text {
+            font-size: 0.85rem; opacity: 0.8; display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 50px;
+            display: inline-flex; width: fit-content;
+        }
+
+        /* Hero Visual - Premium Glassmorphism */
+        .hero-visual {
+            position: absolute; right: -8%; top: 18%; width: 55%; height: 85%;
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3); /* Highlight top border */
+            border-left: 1px solid rgba(255, 255, 255, 0.3); /* Highlight left border */
+            border-radius: 16px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            transform: perspective(1200px) rotateY(-12deg) rotateX(4deg);
+            padding: 24px;
+            display: flex; flex-direction: column; gap: 16px;
+            z-index: 1;
+            transition: transform 0.5s ease-out;
+        }
+        .hero-section:hover .hero-visual { transform: perspective(1200px) rotateY(-8deg) rotateX(2deg); }
+
+        .visual-bar { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .visual-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .visual-block:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .visual-text-title { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 8px; display: flex; gap:6px; align-items: center; }
+        .visual-text-body { font-size: 0.5rem; line-height: 1.8; color: rgba(255,255,255,0.6); }
+
+        @media (max-width: 900px) {
+            .hero-visual { display: none; }
+            .hero-content { margin: 0 auto; text-align: center; }
+            .hero-cta-group { justify-content: center; }
+            .hero-safe-text { justify-content: center; margin: 0 auto; }
+            .lp-title { font-size: 2.2rem; }
+        }
+
+        /* Cards */
+        .lp-card {
+            background: var(--bg-surface);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .lp-card::before { /* Subtle top highlight gradient */
+            content: ''; position: absolute; top:0; left:0; width:100%; height:4px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            opacity: 0.5;
+        }
+        .lp-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-float); }
+        .card-icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.8rem; }
+        .card-text { font-size: 1rem; color: var(--text-muted); line-height: 1.8; }
+
+        /* Steps */
+        .step-card { text-align: center; padding: 2rem; border: none; background: transparent; box-shadow: none; }
+        .step-num {
+            width: 50px; height: 50px;
+            background: var(--primary-color); color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Benefit List */
+        .benefit-item {
+            display: flex; align-items: flex-start; gap: 16px; margin-bottom: 1.5rem;
+            padding: 1.2rem; background: var(--bg-surface);
+            border-radius: 8px; border: 1px solid var(--border-color);
+            transition: border-color 0.2s;
+        }
+        .benefit-item:hover { border-color: var(--primary-color); }
+        .benefit-check { color: var(--premium-gold); font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; } /* Gold Check */
+        .benefit-label { font-weight: 700; display: block; margin-bottom: 4px; font-size: 1.05rem; }
+        .benefit-desc { font-size: 0.95rem; color: var(--text-muted); }
+
+        /* Pricing - Premium Look */
+        .pricing-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .pricing-card.highlight {
+            border: 1px solid var(--premium-gold); /* Gold Border */
+            box-shadow: 0 20px 40px -10px rgba(197, 160, 89, 0.15); /* Warm Gold Shadow */
+            transform: scale(1.02);
+            z-index: 2;
+        }
+        .pricing-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--premium-gold); color: white;
+            padding: 4px 16px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .plan-name { font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;}
+        .plan-price { font-size: 3rem; font-weight: 700; color: var(--text-main); margin: 0.5rem 0 1.5rem; letter-spacing: -1px; }
+        .plan-period { font-size: 0.9rem; color: var(--text-muted); }
+        .plan-features { text-align: left; margin: 2.5rem 0; font-size: 1rem; color: var(--text-muted); }
+        .plan-features li { margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .plan-features i { color: var(--success-color); }
+
+        /* FAQ */
+        .faq-item {
+            background: var(--bg-surface);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: box-shadow 0.2s;
+        }
+        .faq-item:hover { box-shadow: var(--shadow-card); }
+        .faq-q { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; gap: 12px; color: var(--text-main); }
+        .faq-a { font-size: 1rem; color: var(--text-muted); padding-left: 2rem; line-height: 1.8; }
+        .q-mark { color: var(--premium-gold); font-size: 1.2rem; }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-surface-alt);
+            padding: 4rem 0; margin-top: 6rem;
+            text-align: center; font-size: 0.9rem; color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+        .footer a { border-bottom: 1px dotted var(--text-muted); margin: 0 10px; }
+        .footer a:hover { color: var(--primary-color); border-bottom-style: solid; }
+
+        /* ------------------------------------------------------------------
+           Divider: Demo Section
+        ------------------------------------------------------------------ */
+        .demo-divider {
+            background: var(--bg-body);
+            padding: 80px 0 30px;
+            text-align: center;
+        }
+        .demo-label {
+            display: inline-block;
+            background: var(--text-main); /* Black/Dark label for contrast */
+            color: white;
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+            padding: 6px 16px; border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        /* ------------------------------------------------------------------
+           APP UI (Unchanged logic, refined look)
+        ------------------------------------------------------------------ */
+        .app-wrapper {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow-float);
+            padding: 3rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 4rem;
+        }
+        .case-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
+        .form-control {
+            width: 100%; padding: 12px;
+            border: 1px solid var(--border-color); border-radius: 6px;
+            background: var(--bg-body); color: var(--text-main); font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
+        .toggle-switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .toggle-label { font-size: 0.9rem; font-weight: 700; }
+        .toggle-check { width: 44px; height: 24px; background: #cbd5e1; border-radius: 20px; position: relative; transition: 0.3s; }
+        .toggle-check::after { content: ''; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input[type="checkbox"]:checked + .toggle-check { background: var(--success-color); }
+        input[type="checkbox"]:checked + .toggle-check::after { left: 22px; }
+        .logic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; height: 600px; }
+        @media (max-width: 900px) { .logic-grid { grid-template-columns: 1fr; height: auto; } }
+        .logic-col { display: flex; flex-direction: column; height: 100%; }
+        .col-header { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+        .col-header i { color: var(--primary-color); }
+        .logic-textarea { flex-grow: 1; width: 100%; resize: none; padding: 16px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-surface-alt); color: var(--text-main); font-family: inherit; font-size: 0.95rem; line-height: 1.6; min-height: 250px; transition: all 0.2s; }
+        .logic-textarea:focus { background: var(--bg-surface); border-color: var(--primary-color); outline: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .app-footer { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 3rem; }
+        .todo-section, .fee-section { flex: 1; min-width: 300px; }
+        .todo-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .output-actions { width: 100%; display: flex; justify-content: flex-end; gap: 16px; margin-top: 3rem; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 2) 上部固定ナビゲーション -->
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="#" class="brand-logo">
+                <i class="ph-fill ph-compass"></i> 弁護士 思考コンパス
+            </a>
+            <div class="nav-links">
+                <a href="#lp-features">機能</a>
+                <a href="#lp-pricing">料金</a>
+                <a href="#lp-faq">FAQ</a>
+                <!-- target="_blank" を追加 -->
+                <a href="https://spc-jp.github.io/bengoshi-shikou-compass/" target="_blank" rel="noopener noreferrer" class="nav-cta">今すぐ試す</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LP Content Wrapper -->
+    <main id="lp-content">
+        
+        <!-- LP-1: Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content reveal">
+                    <h1 class="lp-title">弁護士の思考を、<br>1画面に。</h1>
+                    <p class="lp-subtitle">相談対応を「事実→論点→方針→費用→ToDo」まで一直線に整理。迷いをなくし、信頼を勝ち取るための思考整理ツール。</p>
+                    
+                    <div class="hero-cta-group">
+                        <!-- target="_blank" を追加 -->
+                        <a href="https://spc-jp.github.io/bengoshi-shikou-compass/" target="_blank" rel="noopener noreferrer" class="btn-main">
+                            <i class="ph-fill ph-play-circle"></i> 今すぐ試す
+                        </a>
+                        <button onclick="document.getElementById('lp-howto').scrollIntoView({behavior:'smooth'})" class="btn-outline">
+                            30秒で分かる
+                        </button>
+                    </div>
+
+                    <div class="hero-safe-text">
+                        <i class="ph-fill ph-lock-key"></i>
+                        <span>ローカル整理版（入力内容は外部送信されません）</span>
+                    </div>
+                </div>
+                
+                <!-- 3D Mockup Visual (Glassmorphism with Text) -->
+                <div class="hero-visual reveal" style="transition-delay: 0.2s;">
+                    <!-- Fake UI Top Bar -->
+                    <div class="visual-bar" style="width:100%; height: 26px; display:flex; align-items:center; padding:0 10px; gap:8px;">
+                         <div style="width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.5);"></div>
+                         <div style="width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3);"></div>
+                         <div style="width:40%; height:8px; border-radius:4px; background:rgba(255,255,255,0.15); margin-left:10px;"></div>
+                    </div>
+                    
+                    <!-- 3 Column UI Content -->
+                    <div style="display:flex; gap:12px; flex:1; margin-top:16px; min-height:0;">
+                        
+                        <!-- Col 1: Facts -->
+                        <div class="visual-block" style="flex:1; padding:12px; display:flex; flex-direction:column; gap:6px;">
+                            <div class="visual-text-title">
+                                <i class="ph-fill ph-clock-counter-clockwise"></i> 事実
+                            </div>
+                            <div class="visual-text-body">
+                                ・2023年10月 契約締結<br>
+                                ・相手方より入金なし<br>
+                                ・内容証明は受取拒否...<br>
+                                <span style="opacity:0.5">・電話での督促も無視</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Col 2: Issues -->
+                        <div class="visual-block" style="flex:1; padding:12px; display:flex; flex-direction:column; gap:6px;">
+                            <div class="visual-text-title">
+                                <i class="ph-fill ph-scales"></i> 論点
+                            </div>
+                            <div class="visual-text-body">
+                                ・消滅時効の成否<br>
+                                ・契約解除の有効性<br>
+                                ・損害賠償の範囲...<br>
+                                <span style="opacity:0.5">・証拠の確保状況</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Col 3: Strategy (Highlighted) -->
+                        <div class="visual-block" style="flex:1; padding:12px; display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.25);">
+                            <div class="visual-text-title" style="color:#fff;">
+                                <i class="ph-fill ph-strategy"></i> 方針
+                            </div>
+                            <div class="visual-text-body" style="color:rgba(255,255,255,0.95);">
+                                ・即時の提訴を検討<br>
+                                ・仮差押えの準備<br>
+                                ・和解は原則拒否...<br>
+                                <span style="opacity:0.7">・費用対効果の説明</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fake UI Bottom Bar -->
+                    <div class="visual-bar" style="width:100%; height: 36px; margin-top:16px; display:flex; justify-content:flex-end; align-items:center; padding:0 15px;">
+                        <div style="width:80px; height:22px; background:var(--premium-gold); border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.1); opacity: 0.9;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-2: Pain Points -->
+        <section class="section-py" style="background: var(--bg-surface-alt);">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">こんな「非効率」を感じていませんか？</h2>
+                    <p class="section-desc">相談中、頭の中だけで処理しようとすると起こる問題</p>
+                </div>
+                <div class="grid-3">
+                    <div class="lp-card reveal" style="transition-delay: 0.1s;">
+                        <i class="ph ph-notepad card-icon"></i>
+                        <h3 class="card-title">メモが散らばる</h3>
+                        <p class="card-text">時系列、相手方の主張、こちらの反論。手書きメモがあちこちに飛び、聞き直しが発生する。</p>
+                    </div>
+                    <div class="lp-card reveal" style="transition-delay: 0.2s;">
+                        <i class="ph ph-currency-yen card-icon"></i>
+                        <h3 class="card-title">費用説明が重荷</h3>
+                        <p class="card-text">方針が決まった後に、計算と説明を一から組み立てるのが毎回しんどい。</p>
+                    </div>
+                    <div class="lp-card reveal" style="transition-delay: 0.3s;">
+                        <i class="ph ph-list-checks card-icon"></i>
+                        <h3 class="card-title">ToDoが抜ける</h3>
+                        <p class="card-text">「次は内容証明」と口頭で伝え、タスク化するのを忘れ、事務局への指示も遅れる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-3: How To -->
+        <section id="lp-howto" class="section-py">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">使い方は3ステップ</h2>
+                    <p class="section-desc">左から右へ、思考の流れに沿って入力するだけ</p>
+                </div>
+                <div class="grid-3">
+                    <div class="step-card reveal" style="transition-delay: 0.1s;">
+                        <div class="step-num">1</div>
+                        <h3 class="card-title">前提を押さえる</h3>
+                        <p class="card-text">案件ヘッダーで「期限」と「利益相反」を最初にチェック。致命的なミスを防ぎます。</p>
+                    </div>
+                    <div class="step-card reveal" style="transition-delay: 0.2s;">
+                        <div class="step-num">2</div>
+                        <h3 class="card-title">3カラムで整理</h3>
+                        <p class="card-text">「事実」を聞きながら「論点」を抽出し、リアルタイムで「方針」を言語化します。</p>
+                    </div>
+                    <div class="step-card reveal" style="transition-delay: 0.3s;">
+                        <div class="step-num">3</div>
+                        <h3 class="card-title">そのまま動く</h3>
+                        <p class="card-text">方針が決まればToDoと見積もりは自動的に決まります。ボタン一つで整形して出力。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-4: Features (Benefits) -->
+        <section id="lp-features" class="section-py" style="background: var(--bg-surface-alt);">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">機能ではなく「成果」を</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="reveal">
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">期限と利益相反が最初に見える</span>
+                                <span class="benefit-desc">受任可否の判断スピードが劇的に上がります。</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">方針と費用がセットで残る</span>
+                                <span class="benefit-desc">「いくらかかるか」の根拠が方針と紐づき、依頼者の納得感が高まります。</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">初動ToDoが雛形で一括登録</span>
+                                <span class="benefit-desc">よくある手順（受任通知送付、預り金口座開設など）をワンクリックで展開。</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal" style="transition-delay: 0.2s;">
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">所内共有・報告書が一発出力</span>
+                                <span class="benefit-desc">入力した内容は整形され、そのままChatworkやSlack、日報に貼れます。</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">貼るだけの文章がすぐ作れる</span>
+                                <span class="benefit-desc">方針案を整形コピーし、メールの下書きとして即利用可能。</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="ph-fill ph-check-circle benefit-check"></i>
+                            <div>
+                                <span class="benefit-label">ローカル完結で守秘に配慮</span>
+                                <span class="benefit-desc">データはブラウザ内に一時保存。サーバーへの送信は一切ありません。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-5: Pricing -->
+        <section id="lp-pricing" class="section-py">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">料金プラン</h2>
+                    <p class="section-desc">まずは無料デモでお試しください</p>
+                </div>
+                <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+                    
+                    <!-- Pro Plan (Highlighted) -->
+                    <div class="pricing-card highlight reveal">
+                        <div class="pricing-badge">RECOMMENDED</div>
+                        <div class="plan-name">Pro</div>
+                        <div class="plan-price">¥9,800<span style="font-size:1rem; font-weight:400; color:var(--text-muted)"> / 月 (税別)</span></div>
+                        <p class="plan-period">個人の弁護士・小規模事務所向け</p>
+                        <ul class="plan-features">
+                            <li><i class="ph-bold ph-check"></i> テンプレToDo機能</li>
+                            <li><i class="ph-bold ph-check"></i> 用途別出力（所内用/依頼者用）</li>
+                            <li><i class="ph-bold ph-check"></i> ダークモード完全対応</li>
+                            <li><i class="ph-bold ph-check"></i> 事務所名・弁護士名設定</li>
+                        </ul>
+                        <button onclick="scrollToApp()" class="btn-main" style="width:100%;">デモを試す</button>
+                    </div>
+                    
+                    <!-- Team Plan -->
+                    <div class="pricing-card reveal" style="transition-delay: 0.2s;">
+                        <div class="plan-name">Team</div>
+                        <div class="plan-price">¥29,800<span style="font-size:1rem; font-weight:400; color:var(--text-muted)"> / 月 (税別)</span></div>
+                        <p class="plan-period">法人・複数人での利用向け</p>
+                        <ul class="plan-features">
+                            <li><i class="ph-bold ph-check"></i> Proプランの全機能</li>
+                            <li><i class="ph-bold ph-check"></i> 分野別テンプレ拡張</li>
+                            <li><i class="ph-bold ph-check"></i> 事務局向け入力導線</li>
+                            <li><i class="ph-bold ph-check"></i> 出力フォーマットのカスタム</li>
+                        </ul>
+                        <button class="btn-outline" style="width:100%; border-color:var(--border-color); color:var(--text-main);">お問い合わせ</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-6: Security -->
+        <section class="section-py-sm" style="background: var(--bg-surface-alt); text-align: center;">
+            <div class="container reveal">
+                <h3 class="section-title" style="font-size: 1.4rem;"><i class="ph-fill ph-shield-check"></i> 安心・守秘への取り組み</h3>
+                <div class="grid-3" style="margin-top: 3rem;">
+                    <div style="text-align: left;">
+                        <b style="font-size:1.1rem;">1. 外部送信なし</b>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-top:8px;">入力された相談内容はブラウザ（ローカル環境）でのみ処理されます。</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <b style="font-size:1.1rem;">2. API連携（将来）</b>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-top:8px;">必要な場合のみ、ユーザーの明示的な操作で判例検索API等へ接続します。</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <b style="font-size:1.1rem;">3. 整理支援</b>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-top:8px;">本ツールは弁護士業務の整理支援であり、法的助言の自動提供ではありません。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-7: FAQ -->
+        <section id="lp-faq" class="section-py">
+            <div class="container reveal" style="max-width: 800px;">
+                <div class="section-header">
+                    <h2 class="section-title">よくあるご質問</h2>
+                </div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="ph-fill ph-question q-mark"></i> 初回相談でも使えますか？</div>
+                        <div class="faq-a">はい、最適です。相談を聞きながらリアルタイムで事実と方針を整理できるため、相談終了時にそのまま議事録として活用できます。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="ph-fill ph-question q-mark"></i> 事務局でも入力できますか？</div>
+                        <div class="faq-a">可能です。電話受電時の一次情報を事務局が入力し、弁護士がそれを引き継いで詳細を詰める使い方が効率的です。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="ph-fill ph-question q-mark"></i> 依頼者にそのまま送って大丈夫ですか？</div>
+                        <div class="faq-a">「依頼者送付用」の出力ボタンを使えば、内部メモを除去した丁寧な文体で出力されますので、そのままメール等に貼り付け可能です。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="ph-fill ph-question q-mark"></i> どこまでカスタムできますか？</div>
+                        <div class="faq-a">Proプラン以上では、よく使うToDoセットの登録や、定型文の登録が可能です。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="ph-fill ph-question q-mark"></i> API連携は必須ですか？</div>
+                        <div class="faq-a">いいえ、基本機能はAPIなしで動作します。思考整理ツールとして完結しています。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LP-8: Closing CTA -->
+        <section class="section-py" style="background: var(--hero-bg); color: white; text-align: center;">
+            <div class="container reveal">
+                <h2 class="lp-title" style="font-size: 2.2rem;">まずは1件、整理してみてください。</h2>
+                <p style="margin-bottom: 2.5rem; opacity: 0.9; font-size:1.1rem;">複雑な案件も、驚くほどシンプルに見えてきます。</p>
+                <!-- target="_blank" を追加 -->
+                <a href="https://spc-jp.github.io/bengoshi-shikou-compass/" target="_blank" rel="noopener noreferrer" class="btn-main">
+                    今すぐ試す（デモ）
+                </a>
+                <div style="margin-top: 2rem;">
+                    <a href="#" style="font-size: 0.9rem; opacity: 0.7; border-bottom: 1px dotted white;">デモ相談（導入検討の方はこちら）</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5) 既存アプリ部分へのつなぎ -->
+    <div id="app-demo" class="demo-divider">
+        <div class="container">
+            <span class="demo-label">DEMO VERSION</span>
+            <h2 class="section-title">デモ：実際に入力してみる</h2>
+            <p class="section-desc">以下のフォームに入力された内容は保存されません（リロードで消えます）</p>
+        </div>
+    </div>
+
+    <!-- 5) アプリ本体（Existing App Logic Recreation） -->
+    <div id="app-container" class="container">
+        <div class="app-wrapper reveal">
+            
+            <!-- Case Header -->
+            <div class="case-header">
+                <div class="form-group">
+                    <label>依頼者名</label>
+                    <input type="text" class="form-control" placeholder="例：法務 太郎">
+                </div>
+                <div class="form-group">
+                    <label>相手方</label>
+                    <input type="text" class="form-control" placeholder="例：株式会社〇〇">
+                </div>
+                <div class="form-group">
+                    <label style="color: var(--accent-color);">回答期限</label>
+                    <input type="date" class="form-control" style="border-color: var(--accent-color);">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" style="display:none;" id="conflictCheck">
+                        <div class="toggle-check"></div>
+                        <span class="toggle-label">利益相反確認済</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 3 Column Logic -->
+            <div class="logic-grid">
+                <!-- Col 1: Facts -->
+                <div class="logic-col">
+                    <div class="col-header"><i class="ph-fill ph-clock-counter-clockwise"></i> 事実 (Facts)</div>
+                    <textarea class="logic-textarea" placeholder="時系列、起きた出来事、相手の主張などを箇条書きで..."></textarea>
+                </div>
+                
+                <!-- Col 2: Issues -->
+                <div class="logic-col">
+                    <div class="col-header"><i class="ph-fill ph-scales"></i> 論点 (Issues)</div>
+                    <textarea class="logic-textarea" placeholder="法的争点、証拠の有無、リスク要因..."></textarea>
+                </div>
+
+                <!-- Col 3: Strategy -->
+                <div class="logic-col">
+                    <div class="col-header"><i class="ph-fill ph-strategy"></i> 方針 (Strategy)</div>
+                    <textarea class="logic-textarea" placeholder="回答の方針、交渉の着地点、訴訟の見込み..."></textarea>
+                </div>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="app-footer">
+                <!-- Fees -->
+                <div class="fee-section">
+                    <div class="col-header"><i class="ph-fill ph-currency-yen"></i> 費用感メモ</div>
+                    <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" class="form-control" placeholder="着手金（例：30万）">
+                        <input type="text" class="form-control" placeholder="報酬金（例：10%）">
+                    </div>
+                    <input type="text" class="form-control" placeholder="実費・日当など備考">
+                </div>
+
+                <!-- ToDo -->
+                <div class="todo-section">
+                    <div class="col-header"><i class="ph-fill ph-check-square"></i> Next Action (ToDo)</div>
+                    <div class="todo-list">
+                        <div class="todo-item">
+                            <input type="checkbox" id="todo1">
+                            <label for="todo1">利益相反の詳細チェック</label>
+                        </div>
+                        <div class="todo-item">
+                            <input type="checkbox" id="todo2">
+                            <label for="todo2">委任契約書の作成</label>
+                        </div>
+                        <div class="todo-item">
+                            <input type="text" class="form-control" placeholder="+ 新しいタスクを追加" style="padding: 6px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Actions -->
+            <div class="output-actions">
+                <button class="btn-outline" style="color:var(--text-main); border-color:var(--border-color);" onclick="alert('下書きを保存しました（デモ）')">
+                    <i class="ph-fill ph-floppy-disk"></i> 一時保存
+                </button>
+                <button class="btn-main" onclick="copyToClipboard()">
+                    <i class="ph-fill ph-copy"></i> 所内共有用にコピー
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 6) Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p style="margin-bottom: 1rem; font-weight: 700;">弁護士 思考コンパス Pro</p>
+            <p style="margin-bottom: 2rem;">
+                <a href="#">特定商取引法に基づく表記</a>
+                <a href="#">プライバシーポリシー</a>
+                <a href="#">お問い合わせ</a>
+            </p>
+            <p style="opacity: 0.6;">© 2024 Legal Thinking Compass. All rights reserved.<br>本ツールは思考整理支援ツールであり、法的助言を自動提供するものではありません。</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 3) スムーズスクロール & アプリ動作ロジック
+        function scrollToApp() {
+            const app = document.getElementById('app-demo');
+            app.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const facts = document.querySelectorAll('.logic-textarea')[0].value;
+            const issues = document.querySelectorAll('.logic-textarea')[1].value;
+            const strategy = document.querySelectorAll('.logic-textarea')[2].value;
+            
+            if(!facts && !strategy) {
+                alert("内容が入力されていません。");
+                return;
+            }
+
+            const text = `【案件整理メモ】\n\n■事実\n${facts}\n\n■論点\n${issues}\n\n■方針\n${strategy}\n\n----------------\nCreated by 弁護士思考コンパス`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('クリップボードにコピーしました。\nChatworkやSlackに貼り付け可能です。');
+            });
+        }
+
+        // Scroll Reveal Animation (Simple Intersection Observer)
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const revealOnScroll = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Animate only once
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(revealOnScroll, {
+                root: null,
+                threshold: 0.15, // Trigger when 15% visible
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            reveals.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
