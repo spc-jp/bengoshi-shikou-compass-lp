@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>弁護士 思考コンパス | Pro</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://spc-jp.github.io/bengoshi-shikou-compass-lp/favicon.png" type="image/png">
+
     <!-- Google Fonts: 信頼感のあるNoto Sans JPと、数字用のRoboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -211,6 +215,22 @@
             transition: all 0.3s;
         }
         .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+
+        /* Secondary Outline Button for light backgrounds */
+        .btn-outline-dark {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-weight: 700;
+            transition: all 0.3s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-outline-dark:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
 
         .hero-safe-text {
             font-size: 0.85rem; opacity: 0.8; display: flex; align-items: center; gap: 8px;
@@ -523,17 +543,17 @@
                 </div>
                 <div class="grid-3">
                     <div class="lp-card reveal" style="transition-delay: 0.1s;">
-                        <i class="ph ph-notepad card-icon"></i>
+                        <i class="ph-fill ph-notepad card-icon"></i>
                         <h3 class="card-title">メモが散らばる</h3>
                         <p class="card-text">時系列、相手方の主張、こちらの反論。手書きメモがあちこちに飛び、聞き直しが発生する。</p>
                     </div>
                     <div class="lp-card reveal" style="transition-delay: 0.2s;">
-                        <i class="ph ph-currency-yen card-icon"></i>
+                        <i class="ph-fill ph-calculator card-icon"></i>
                         <h3 class="card-title">費用説明が重荷</h3>
                         <p class="card-text">方針が決まった後に、計算と説明を一から組み立てるのが毎回しんどい。</p>
                     </div>
                     <div class="lp-card reveal" style="transition-delay: 0.3s;">
-                        <i class="ph ph-list-checks card-icon"></i>
+                        <i class="ph-fill ph-list-checks card-icon"></i>
                         <h3 class="card-title">ToDoが抜ける</h3>
                         <p class="card-text">「次は内容証明」と口頭で伝え、タスク化するのを忘れ、事務局への指示も遅れる。</p>
                     </div>
@@ -625,8 +645,39 @@
             </div>
         </section>
 
+        <!-- LP-4.5: Related Tools (Suite) -->
+        <section id="lp-suite" class="section-py">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">思考整理の先へ。連携AIツール</h2>
+                    <p class="section-desc">思考コンパスと合わせて活用できる、弁護士業務に特化した専用ツール群です。</p>
+                </div>
+                <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+                    <!-- 書面チェックくん -->
+                    <div class="lp-card reveal" style="border-top: 3px solid var(--premium-gold); display: flex; flex-direction: column;">
+                        <i class="ph-fill ph-file-magnifying-glass card-icon" style="color: var(--premium-gold);"></i>
+                        <h3 class="card-title">書面チェックくん</h3>
+                        <p class="card-text" style="margin-bottom: 1.5rem; flex-grow: 1;">思考コンパスで固めた方針を元に作成した準備書面や契約書を、AIが客観的にレビュー。法的なリスクや抜け漏れを瞬時に指摘します。</p>
+                        <a href="https://spc-jp.github.io/syomen-check/" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">
+                            ツールを開く <i class="ph-bold ph-arrow-up-right"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- 匿名化くん -->
+                    <div class="lp-card reveal" style="transition-delay: 0.2s; border-top: 3px solid var(--premium-gold); display: flex; flex-direction: column;">
+                        <i class="ph-fill ph-eye-slash card-icon" style="color: var(--premium-gold);"></i>
+                        <h3 class="card-title">匿名化くん</h3>
+                        <p class="card-text" style="margin-bottom: 1.5rem; flex-grow: 1;">書面やメモから、氏名や企業名などの固有名詞を高度に秘匿化。安全な外部共有や、生成AIへ入力する前のセキュアな前処理に最適です。</p>
+                        <a href="https://spc-jp.github.io/tokumeikakun/" target="_blank" rel="noopener noreferrer" class="btn-outline-dark">
+                            ツールを開く <i class="ph-bold ph-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- LP-5: Pricing -->
-        <section id="lp-pricing" class="section-py">
+        <section id="lp-pricing" class="section-py" style="background: var(--bg-surface-alt);">
             <div class="container">
                 <div class="section-header reveal">
                     <h2 class="section-title">料金プラン</h2>
@@ -667,7 +718,7 @@
         </section>
 
         <!-- LP-6: Security -->
-        <section class="section-py-sm" style="background: var(--bg-surface-alt); text-align: center;">
+        <section class="section-py-sm" style="text-align: center;">
             <div class="container reveal">
                 <h3 class="section-title" style="font-size: 1.4rem;"><i class="ph-fill ph-shield-check"></i> 安心・守秘への取り組み</h3>
                 <div class="grid-3" style="margin-top: 3rem;">
@@ -688,7 +739,7 @@
         </section>
 
         <!-- LP-7: FAQ -->
-        <section id="lp-faq" class="section-py">
+        <section id="lp-faq" class="section-py" style="background: var(--bg-surface-alt);">
             <div class="container reveal" style="max-width: 800px;">
                 <div class="section-header">
                     <h2 class="section-title">よくあるご質問</h2>
@@ -841,9 +892,8 @@
         <div class="container">
             <p style="margin-bottom: 1rem; font-weight: 700;">弁護士 思考コンパス Pro</p>
             <p style="margin-bottom: 2rem;">
-                <a href="#">特定商取引法に基づく表記</a>
-                <a href="#">プライバシーポリシー</a>
-                <a href="#">お問い合わせ</a>
+                <a href="https://www.smileplusctg.com/blank" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+                <a href="https://www.smileplusctg.com/contact" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
             </p>
             <p style="opacity: 0.6;">© 2024 Legal Thinking Compass. All rights reserved.<br>本ツールは思考整理支援ツールであり、法的助言を自動提供するものではありません。</p>
         </div>
